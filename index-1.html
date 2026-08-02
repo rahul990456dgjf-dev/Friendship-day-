@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Happy Friendship Day, Sagarika ❤️</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS RESET & ROOT VARIABLES
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:       #ff6b9d;
+      --rose:       #ff4d8b;
+      --lavender:   #c77dff;
+      --purple:     #9b5de5;
+      --gold:       #ffd700;
+      --soft-white: rgba(255,255,255,0.92);
+      --glass-bg:   rgba(255,255,255,0.12);
+      --glass-border: rgba(255,255,255,0.25);
+      --shadow:     0 8px 32px rgba(155,93,229,0.25);
+      --grad1: linear-gradient(135deg, #1a0533 0%, #2d0b5e 40%, #0d1b4a 100%);
+      --grad2: linear-gradient(135deg, #ff6b9d, #c77dff, #4cc9f0);
+      --font-display: 'Playfair Display', serif;
+      --font-body:    'Lato', sans-serif;
+      --font-script:  'Dancing Script', cursive;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--grad1);
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* =============================================
+       CANVAS BACKGROUND (stars / particles)
+    ============================================= */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* =============================================
+       LOADING SCREEN
+    ============================================= */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--grad1);
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-heart {
+      font-size: 64px;
+      animation: loaderPulse 1s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px #ff6b9d);
+    }
+    @keyframes loaderPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.25); }
+    }
+
+    .loader-text {
+      font-family: var(--font-script);
+      font-size: 1.6rem;
+      color: var(--pink);
+      margin-top: 20px;
+      letter-spacing: 2px;
+      animation: fadeInUp 1s ease 0.3s both;
+    }
+
+    .loader-bar-wrap {
+      width: 200px;
+      height: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 99px;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+    .loader-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--grad2);
+      border-radius: 99px;
+      transition: width 0.1s linear;
+    }
+
+    /* =============================================
+       PAGE SYSTEM
+    ============================================= */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 60px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .page.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .page.fade-out {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    /* =============================================
+       FLOATING DECORATIONS
+    ============================================= */
+    .floating-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Hearts */
+    .float-heart {
+      position: absolute;
+      font-size: 20px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) rotate(-10deg) scale(0.8); }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-110vh) rotate(20deg) scale(1.1); }
+    }
+
+    /* Balloons */
+    .balloon {
+      position: absolute;
+      bottom: -80px;
+      font-size: 36px;
+      animation: balloonFloat linear infinite;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+    @keyframes balloonFloat {
+      0%   { transform: translateY(0) rotate(-5deg); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 0.8; }
+      100% { transform: translateY(-110vh) rotate(5deg); opacity: 0; }
+    }
+
+    /* Sparkles */
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: sparkleAnim ease-in-out infinite;
+    }
+    @keyframes sparkleAnim {
+      0%,100% { opacity: 0; transform: scale(0); }
+      50%      { opacity: 1; transform: scale(1); }
+    }
+
+    /* =============================================
+       GLASSMORPHISM CARD
+    ============================================= */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.2);
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* =============================================
+       BUTTONS
+    ============================================= */
+    .btn-magic {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(255,107,157,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 28px;
+      text-transform: uppercase;
+    }
+    .btn-magic::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+      border-radius: inherit;
+    }
+    .btn-magic::after {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 100%;
+      top: 0;
+      left: -100px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.5s ease;
+    }
+    .btn-magic:hover::after,
+    .btn-magic:active::after { left: 120%; }
+    .btn-magic:active { transform: scale(0.96); box-shadow: 0 2px 12px rgba(255,107,157,0.4); }
+    .btn-magic:hover  { transform: scale(1.04) translateY(-2px); box-shadow: 0 8px 32px rgba(255,107,157,0.6); }
+
+    /* =============================================
+       TYPOGRAPHY HELPERS
+    ============================================= */
+    .display-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      font-weight: 700;
+      background: var(--grad2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      line-height: 1.2;
+      filter: drop-shadow(0 0 20px rgba(255,107,157,0.4));
+    }
+    .script-title {
+      font-family: var(--font-script);
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .body-text {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.88);
+      text-align: center;
+    }
+
+    /* =============================================
+       PAGE 1 – WELCOME
+    ============================================= */
+    #page1 { gap: 24px; }
+
+    .welcome-emoji {
+      font-size: 80px;
+      animation: floatBounce 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(255,107,157,0.7));
+    }
+    @keyframes floatBounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-18px); }
+    }
+
+    .confetti-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      overflow: visible;
+    }
+
+    /* =============================================
+       PAGE 2 – STORY
+    ============================================= */
+    #page2 { gap: 20px; }
+
+    .story-para {
+      font-size: 0.98rem;
+      line-height: 1.85;
+      color: rgba(255,255,255,0.9);
+      text-align: left;
+      margin-bottom: 14px;
+    }
+    .story-para:first-of-type::first-letter {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      float: left;
+      line-height: 0.85;
+      margin-right: 6px;
+      background: var(--grad2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* =============================================
+       PAGE 3 – ABOUT SAGARIKA
+    ============================================= */
+    #page3 { gap: 16px; }
+
+    .compliment-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .compliment-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(155,93,229,0.2);
+      animation: slideInCard 0.6s ease both;
+      transform: translateX(0);
+    }
+    @keyframes slideInCard {
+      from { opacity: 0; transform: translateX(-30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .compliment-icon { font-size: 28px; flex-shrink: 0; }
+    .compliment-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.9);
+      font-weight: 400;
+    }
+
+    /* =============================================
+       PAGE 4 – GIFT
+    ============================================= */
+    #page4 { gap: 24px; }
+
+    .gift-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+
+    .gift-box {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .gift-box:active { transform: scale(0.94); }
+
+    /* Gift box SVG built entirely from divs */
+    .gift-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 100px;
+      background: linear-gradient(135deg, #ff6b9d, #c77dff);
+      border-radius: 12px 12px 16px 16px;
+      box-shadow: 0 8px 30px rgba(255,107,157,0.5);
+    }
+    .gift-lid {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 40px;
+      background: linear-gradient(135deg, #c77dff, #ff6b9d);
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(155,93,229,0.5);
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+      transform-origin: center top;
+    }
+    .gift-lid.open {
+      transform: translateX(-50%) translateY(-60px) rotateX(-120deg);
+      opacity: 0;
+    }
+    .gift-ribbon-v {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 100px;
+      background: var(--gold);
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .gift-ribbon-h {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-65px);
+      width: 130px;
+      height: 16px;
+      background: var(--gold);
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .gift-bow {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 36px;
+      z-index: 5;
+      filter: drop-shadow(0 0 8px gold);
+      animation: bowPulse 2s ease-in-out infinite;
+    }
+    @keyframes bowPulse {
+      0%,100% { transform: translateX(-50%) scale(1); }
+      50%      { transform: translateX(-50%) scale(1.1); }
+    }
+
+    /* Inside gift – makeup box */
+    .makeup-reveal {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    .makeup-reveal.show { display: flex; }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .makeup-box-wrap { font-size: 80px; filter: drop-shadow(0 0 24px #ffd700) drop-shadow(0 0 48px rgba(255,107,157,0.6)); }
+
+    .gift-tap-hint {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      font-style: italic;
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 0.6; }
+      50%      { opacity: 1; }
+    }
+
+    /* Glitter burst */
+    .glitter-burst { position: absolute; inset: 0; pointer-events: none; }
+    .glitter-particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: glitterFly 1s ease-out forwards;
+    }
+    @keyframes glitterFly {
+      0%   { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: var(--tx) scale(0); }
+    }
+
+    /* =============================================
+       PAGE 5 – LETTER
+    ============================================= */
+    #page5 { gap: 24px; }
+
+    .letter-card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 24px;
+      padding: 32px 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 48px rgba(155,93,229,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .letter-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,107,157,0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    #letterText {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: rgba(255,255,255,0.9);
+      text-align: left;
+      white-space: pre-wrap;
+      min-height: 40px;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 2px;
+      height: 1.1em;
+      background: var(--pink);
+      vertical-align: text-bottom;
+      animation: cursorBlink 0.7s step-end infinite;
+    }
+    @keyframes cursorBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .letter-sign {
+      font-family: var(--font-script);
+      font-size: 1.5rem;
+      color: var(--gold);
+      text-align: right;
+      margin-top: 24px;
+      display: none;
+      animation: fadeInUp 1s ease both;
+    }
+
+    .ending-title {
+      display: none;
+      font-family: var(--font-script);
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      background: var(--grad2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      filter: drop-shadow(0 0 20px rgba(255,107,157,0.5));
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%,100% { filter: drop-shadow(0 0 10px rgba(255,107,157,0.5)); }
+      50%      { filter: drop-shadow(0 0 30px rgba(255,107,157,0.9)); }
+    }
+
+    /* =============================================
+       FIREWORKS CANVAS
+    ============================================= */
+    #fireworksCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      display: none;
+    }
+
+    /* =============================================
+       PROGRESS DOTS
+    ============================================= */
+    .progress-dots {
+      position: fixed;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .dot.active {
+      background: var(--pink);
+      transform: scale(1.5);
+      box-shadow: 0 0 8px var(--pink);
+    }
+
+    /* =============================================
+       SECTION HEADER
+    ============================================= */
+    .section-eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--lavender);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    /* =============================================
+       UTILITY ANIMATIONS
+    ============================================= */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: var(--grad2);
+      border-radius: 99px;
+      margin: 12px auto;
+    }
+
+    /* Music button */
+    #musicBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 500;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    #musicBtn:active { transform: scale(0.9); }
+
+    /* Responsive tweaks */
+    @media (max-width: 360px) {
+      .glass-card { padding: 24px 18px; }
+      .display-title { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- =============================================
+     LOADING SCREEN
+============================================= -->
+<div id="loader">
+  <div class="loader-heart">💖</div>
+  <div class="loader-text">A surprise awaits you…</div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loaderBar"></div>
+  </div>
+</div>
+
+<!-- =============================================
+     BACKGROUND CANVAS (stars + particles)
+============================================= -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- =============================================
+     FIREWORKS CANVAS
+============================================= -->
+<canvas id="fireworksCanvas"></canvas>
+
+<!-- =============================================
+     FLOATING DECORATION LAYER
+============================================= -->
+<div class="floating-layer" id="floatLayer"></div>
+
+<!-- =============================================
+     PROGRESS DOTS
+============================================= -->
+<div class="progress-dots" id="progressDots">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+
+<!-- =============================================
+     MUSIC BUTTON (placeholder – replace src)
+============================================= -->
+<button id="musicBtn" title="Toggle music">🎵</button>
+<!--
+  To add music: uncomment the audio tag below and replace "your-music-file.mp3" with your file.
+  <audio id="bgMusic" loop>
+    <source src="your-music-file.mp3" type="audio/mpeg" />
+  </audio>
+-->
+
+<!-- =============================================
+     PAGE 1 – WELCOME
+============================================= -->
+<section class="page active" id="page1">
+  <p class="section-eyebrow">✨ Friendship Day 2025 ✨</p>
+  <div class="welcome-emoji">🌸</div>
+
+  <div class="display-title">Happy Friendship Day,<br/>Sagarika ❤️</div>
+
+  <div class="divider"></div>
+
+  <div class="glass-card" style="text-align:center;">
+    <p class="script-title" style="font-size:1.1rem; color:rgba(255,255,255,0.75);">
+      "Some friendships are so rare, they feel like magic.<br/>
+      Ours is exactly that."
+    </p>
+  </div>
+
+  <button class="btn-magic" onclick="goToPage(2)">
+    💌 Open Our Journey
+  </button>
+</section>
+
+<!-- =============================================
+     PAGE 2 – FRIENDSHIP STORY
+============================================= -->
+<section class="page" id="page2">
+  <p class="section-eyebrow">Chapter One</p>
+  <div class="display-title" style="font-size:clamp(1.6rem,5vw,2.4rem);">Our Friendship Story</div>
+  <div class="divider"></div>
+
+  <div class="glass-card">
+    <p class="story-para">
+      It all started in the middle of a game — Free Fire. Two strangers, each on their own adventure, crossed paths in a world built for battle. But what began as a casual encounter slowly grew into something far more meaningful than either of us expected.
+    </p>
+    <p class="story-para">
+      After that first meeting, we started talking. Not just about the game, but about everything. Hours would pass and it still felt like there was so much left to say. Time had a strange way of disappearing whenever we were in conversation.
+    </p>
+    <p class="story-para">
+      Slowly, we began to understand each other — our humour, our moods, the little things that made us laugh and the bigger things that mattered to us. Every conversation peeled back another layer, and every layer made the friendship feel more real, more valuable.
+    </p>
+    <p class="story-para">
+      Even the most ordinary days stopped feeling ordinary. A boring afternoon could turn into something memorable simply because there was someone on the other end of the screen ready to talk, ready to listen, ready to laugh.
+    </p>
+    <p class="story-para">
+      It became comfortable — the kind of comfort you rarely find. The kind where you don't have to pretend or perform. You could just be yourself, share your honest thoughts, and know they'd be received with warmth.
+    </p>
+    <p class="story-para" style="margin-bottom:0;">
+      And that is how our friendship became one of the happiest parts of life — quietly, beautifully, and without even trying. 🌸
+    </p>
+  </div>
+
+  <button class="btn-magic" onclick="goToPage(3)">
+    🌟 What Makes You Special
+  </button>
+</section>
+
+<!-- =============================================
+     PAGE 3 – ABOUT SAGARIKA
+============================================= -->
+<section class="page" id="page3">
+  <p class="section-eyebrow">For You, Always</p>
+  <div class="display-title" style="font-size:clamp(1.6rem,5vw,2.4rem);">You Are Truly Special</div>
+  <div class="divider"></div>
+
+  <div class="compliment-grid" id="complimentGrid">
+    <!-- Populated by JS for staggered animation -->
+  </div>
+
+  <button class="btn-magic" onclick="goToPage(4)" style="margin-top:20px;">
+    🎁 Open Your Gift
+  </button>
+</section>
+
+<!-- =============================================
+     PAGE 4 – GIFT
+============================================= -->
+<section class="page" id="page4">
+  <p class="section-eyebrow">A Little Surprise</p>
+  <div class="display-title" style="font-size:clamp(1.6rem,5vw,2.4rem);">Your Gift Awaits 🎁</div>
+  <div class="divider"></div>
+
+  <!-- Before opening -->
+  <div id="giftUnopened">
+    <div class="gift-container" onclick="openGift()">
+      <div class="gift-box">
+        <div class="gift-body"></div>
+        <div class="gift-ribbon-v"></div>
+        <div class="gift-ribbon-h"></div>
+        <div class="gift-lid" id="giftLid"></div>
+        <div class="gift-bow">🎀</div>
+      </div>
+      <div class="glitter-burst" id="glitterBurst"></div>
+    </div>
+    <p class="gift-tap-hint" style="margin-top:12px;">✨ Tap the gift to open it ✨</p>
+  </div>
+
+  <!-- After opening -->
+  <div class="makeup-reveal" id="makeupReveal">
+    <div class="makeup-box-wrap">💄</div>
+    <div class="glass-card" style="text-align:center; padding:20px 24px;">
+      <p class="script-title" style="font-size:1.3rem; margin-bottom:8px;">A small surprise</p>
+      <p class="body-text" style="font-size:0.92rem;">
+        For someone truly special — because you deserve all the sparkle in the world. 💖✨
+      </p>
+    </div>
+  </div>
+
+  <button class="btn-magic" id="lastMsgBtn" style="display:none;" onclick="goToPage(5)">
+    💌 One Last Message
+  </button>
+</section>
+
+<!-- =============================================
+     PAGE 5 – HEARTFELT LETTER
+============================================= -->
+<section class="page" id="page5">
+  <p class="section-eyebrow">From the Heart</p>
+  <div class="display-title" style="font-size:clamp(1.5rem,5vw,2.2rem);">A Letter Just For You</div>
+  <div class="divider"></div>
+
+  <div class="letter-card">
+    <div id="letterText"></div>
+    <span class="cursor-blink" id="typeCursor"></span>
+    <div class="letter-sign" id="letterSign">
+      With Best Wishes ❤️<br/>— Your Friend, Always 🌸
+    </div>
+  </div>
+
+  <div class="ending-title" id="endingTitle">
+    Happy Friendship Day, Sagarika 🎉💖
+  </div>
+</section>
+
+<!-- =============================================
+     JAVASCRIPT
+============================================= -->
+<script>
+  /* ============================================
+     STATE
+  ============================================ */
+  let currentPage = 1;
+  let giftOpened = false;
+  let typingDone = false;
+  let fireworksRunning = false;
+
+  /* ============================================
+     LOADING SCREEN
+  ============================================ */
+  (function initLoader() {
+    const bar = document.getElementById('loaderBar');
+    const loader = document.getElementById('loader');
+    let progress = 0;
+
+    const interval = setInterval(() => {
+      progress += Math.random() * 18 + 4;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        setTimeout(() => {
+          loader.classList.add('hidden');
+          setTimeout(() => loader.remove(), 900);
+          triggerEntryAnimation();
+        }, 400);
+      }
+      bar.style.width = progress + '%';
+    }, 120);
+  })();
+
+  function triggerEntryAnimation() {
+    document.querySelector('#page1').style.transition = 'opacity 1s ease, transform 1s ease';
+  }
+
+  /* ============================================
+     BACKGROUND CANVAS — STARS + GLOW PARTICLES
+  ============================================ */
+  (function initBgCanvas() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [], particles = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      buildStars();
+    }
+
+    function buildStars() {
+      stars = [];
+      for (let i = 0; i < 120; i++) {
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.8 + 0.3,
+          alpha: Math.random() * 0.7 + 0.3,
+          speed: Math.random() * 0.003 + 0.001,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    // Glow particles
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random(),
+        y: Math.random(),
+        r: Math.random() * 60 + 30,
+        color: ['rgba(255,107,157,', 'rgba(199,125,255,', 'rgba(76,201,240,'][Math.floor(Math.random()*3)],
+        alpha: Math.random() * 0.06 + 0.02,
+        dx: (Math.random() - 0.5) * 0.0002,
+        dy: (Math.random() - 0.5) * 0.0002
+      });
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+
+      // Glow blobs
+      particles.forEach(p => {
+        p.x = (p.x + p.dx + 1) % 1;
+        p.y = (p.y + p.dy + 1) % 1;
+        const grd = ctx.createRadialGradient(p.x*W, p.y*H, 0, p.x*W, p.y*H, p.r);
+        grd.addColorStop(0, p.color + p.alpha + ')');
+        grd.addColorStop(1, p.color + '0)');
+        ctx.fillStyle = grd;
+        ctx.fillRect(p.x*W - p.r, p.y*H - p.r, p.r*2, p.r*2);
+      });
+
+      // Stars
+      stars.forEach(s => {
+        const twinkle = Math.sin(t * s.speed * 1000 + s.phase) * 0.3 + 0.7;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.alpha * twinkle})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    requestAnimationFrame(draw);
+  })();
+
+  /* ============================================
+     FLOATING HEARTS + BALLOONS + SPARKLES
+  ============================================ */
+  (function spawnFloaters() {
+    const layer = document.getElementById('floatLayer');
+    const hearts = ['❤️','💖','💕','💗','💓','🌸','✨','⭐'];
+    const balloons = ['🎈','🎀'];
+    const colors = ['#ff6b9d','#ffd700','#c77dff','#4cc9f0','#ff9a3c'];
+
+    // Hearts
+    setInterval(() => {
+      const el = document.createElement('div');
+      el.className = 'float-heart';
+      el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.bottom = '-40px';
+      el.style.fontSize = (Math.random() * 18 + 12) + 'px';
+      const dur = Math.random() * 8 + 7;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = '0s';
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), dur * 1000);
+    }, 800);
+
+    // Balloons
+    setInterval(() => {
+      const el = document.createElement('div');
+      el.className = 'balloon';
+      el.textContent = balloons[Math.floor(Math.random() * balloons.length)];
+      el.style.left = (Math.random() * 90 + 5) + '%';
+      const dur = Math.random() * 10 + 12;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = '0s';
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), dur * 1000);
+    }, 2500);
+
+    // Sparkles
+    setInterval(() => {
+      const el = document.createElement('div');
+      el.className = 'sparkle';
+      el.style.left = Math.random() * 100 + '%';
+      el.style.top  = Math.random() * 100 + '%';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      const dur = Math.random() * 2 + 1;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = Math.random() * 1 + 's';
+      el.style.width = el.style.height = (Math.random() * 5 + 3) + 'px';
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 1.5) * 1000);
+    }, 300);
+  })();
+
+  /* ============================================
+     PAGE NAVIGATION
+  ============================================ */
+  function goToPage(num) {
+    const current = document.getElementById('page' + currentPage);
+    const next    = document.getElementById('page' + num);
+
+    // Fade out current
+    current.classList.add('fade-out');
+    setTimeout(() => {
+      current.classList.remove('active', 'fade-out');
+      current.style.display = 'none';
+
+      // Show next
+      next.style.display = 'flex';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          next.classList.add('active');
+          currentPage = num;
+          updateDots();
+          onPageEnter(num);
+        });
+      });
+    }, 500);
+  }
+
+  function updateDots() {
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === currentPage);
+    });
+  }
+
+  function onPageEnter(num) {
+    if (num === 3) buildCompliments();
+    if (num === 5) startLetter();
+  }
+
+  /* ============================================
+     PAGE 3 – COMPLIMENTS
+  ============================================ */
+  const compliments = [
+    { icon: '🌸', text: 'You are incredibly kind — the sort of kindness that makes people feel safe around you.' },
+    { icon: '😄', text: 'You make every conversation enjoyable. Talking with you never feels like effort.' },
+    { icon: '☀️', text: 'Your smile has the power to brighten someone\'s entire day, just like that.' },
+    { icon: '🤗', text: 'You are caring in a way that is genuine — people feel it without you even saying a word.' },
+    { icon: '💪', text: 'You are supportive. Whenever it matters, you show up with the right words.' },
+    { icon: '👑', text: 'You are one of the nicest friends anyone could ever be lucky enough to have.' },
+    { icon: '♾️', text: 'I genuinely hope our friendship stays strong, happy, and beautiful forever.' }
+  ];
+
+  function buildCompliments() {
+    const grid = document.getElementById('complimentGrid');
+    if (grid.children.length > 0) return; // already built
+    compliments.forEach((c, i) => {
+      const card = document.createElement('div');
+      card.className = 'compliment-card';
+      card.style.animationDelay = (i * 0.1) + 's';
+      card.innerHTML = `<span class="compliment-icon">${c.icon}</span><span class="compliment-text">${c.text}</span>`;
+      grid.appendChild(card);
+    });
+  }
+
+  /* ============================================
+     PAGE 4 – GIFT OPENING
+  ============================================ */
+  function openGift() {
+    if (giftOpened) return;
+    giftOpened = true;
+
+    // Open lid
+    document.getElementById('giftLid').classList.add('open');
+
+    // Glitter burst
+    const burst = document.getElementById('glitterBurst');
+    const colors = ['#ffd700','#ff6b9d','#c77dff','#4cc9f0','#fff'];
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'glitter-particle';
+      const angle = (i / 20) * Math.PI * 2;
+      const dist  = Math.random() * 80 + 40;
+      p.style.left = '50%';
+      p.style.top  = '50%';
+      p.style.background = colors[i % colors.length];
+      p.style.setProperty('--tx', `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`);
+      p.style.animationDelay = (Math.random() * 0.2) + 's';
+      burst.appendChild(p);
+    }
+
+    // Show reveal after animation
+    setTimeout(() => {
+      document.getElementById('giftUnopened').style.display = 'none';
+      document.getElementById('makeupReveal').classList.add('show');
+      document.getElementById('lastMsgBtn').style.display = 'inline-flex';
+    }, 700);
+  }
+
+  /* ============================================
+     PAGE 5 – TYPEWRITER LETTER
+  ============================================ */
+  const letterContent = `Dear Sagarika,
+
+There are some friendships that come into your life quietly, without warning — and before you know it, they have become one of the most precious things you hold close to your heart. Our friendship is exactly that.
+
+Every single conversation we have had has become a beautiful memory. I don't think I ever realised just how much a simple exchange of words could mean until I started talking with you. You have a way of making even the most ordinary moments feel worth remembering.
+
+Friendship is one of the greatest gifts life has to offer. And I count myself truly fortunate to have found a friend like you — someone who listens, who understands, who makes things a little lighter just by being there. Not everyone gets that kind of friendship, and I never take ours for granted.
+
+On this special day, I want you to know how much your presence means. You have added warmth, laughter, and a beautiful kind of comfort to my life that I genuinely treasure.
+
+I hope this friendship of ours lasts forever. I hope we continue to laugh together, support each other, and share countless more conversations — each one adding to the story of a bond that truly matters.
+
+Happy Friendship Day, Sagarika. 🎉
+
+Keep smiling and stay happy, always. The world is a better place with your smile in it. 🌸`;
+
+  function startLetter() {
+    if (typingDone) return;
+    const el = document.getElementById('letterText');
+    const cursor = document.getElementById('typeCursor');
+    el.textContent = '';
+    let i = 0;
+
+    function type() {
+      if (i < letterContent.length) {
+        el.textContent += letterContent[i];
+        i++;
+        const speed = letterContent[i - 1] === '\n' ? 60 : (Math.random() * 20 + 18);
+        setTimeout(type, speed);
+        // Auto-scroll letter into view
+        el.parentElement.scrollTop = el.parentElement.scrollHeight;
+      } else {
+        cursor.style.display = 'none';
+        typingDone = true;
+        // Show signature
+        setTimeout(() => {
+          document.getElementById('letterSign').style.display = 'block';
+          // Show ending title
+          setTimeout(() => {
+            document.getElementById('endingTitle').style.display = 'block';
+            launchFireworks();
+          }, 1000);
+        }, 600);
+      }
+    }
+    type();
+  }
+
+  /* ============================================
+     FIREWORKS
+  ============================================ */
+  function launchFireworks() {
+    const canvas = document.getElementById('fireworksCanvas');
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    fireworksRunning = true;
+
+    const particles = [];
+    const colors = ['#ff6b9d','#ffd700','#c77dff','#4cc9f0','#fff','#ff9a3c'];
+
+    function spawnFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.6 + 50;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 60; i++) {
+        const angle = (Math.PI * 2 / 60) * i;
+        const speed = Math.random() * 4 + 1.5;
+        particles.push({
+          x, y, vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1, color,
+          size: Math.random() * 3 + 1
+        });
+      }
+    }
+
+    let t = 0;
+    function animate() {
+      if (!fireworksRunning) return;
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06;
+        p.vx *= 0.98;
+        p.alpha -= 0.016;
+        ctx.globalAlpha = Math.max(p.alpha, 0);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+
+      // Remove dead particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        if (particles[i].alpha <= 0) particles.splice(i, 1);
+      }
+
+      t++;
+      if (t % 50 === 0) spawnFirework();
+      requestAnimationFrame(animate);
+    }
+
+    // Initial burst
+    for (let i = 0; i < 4; i++) setTimeout(spawnFirework, i * 300);
+    animate();
+
+    // Stop after 8 seconds
+    setTimeout(() => {
+      fireworksRunning = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = 'none';
+    }, 8000);
+  }
+
+  /* ============================================
+     MUSIC TOGGLE (placeholder)
+  ============================================ */
+  document.getElementById('musicBtn').addEventListener('click', () => {
+    const audio = document.getElementById('bgMusic');
+    const btn   = document.getElementById('musicBtn');
+    if (!audio) {
+      btn.title = 'Add a music file to enable this feature';
+      btn.style.opacity = '0.5';
+      return;
+    }
+    if (audio.paused) { audio.play(); btn.textContent = '🔊'; }
+    else { audio.pause(); btn.textContent = '🎵'; }
+  });
+
+  /* ============================================
+     RESIZE HANDLER
+  ============================================ */
+  window.addEventListener('resize', () => {
+    const fw = document.getElementById('fireworksCanvas');
+    if (fw) { fw.width = window.innerWidth; fw.height = window.innerHeight; }
+  });
+</script>
+</body>
+</html>
